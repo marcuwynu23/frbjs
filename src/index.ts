@@ -23,20 +23,32 @@ class FireRabbit {
 		console.log(` [x] Sent: ${messageString}`);
 	}
 
-	async receive(queueName: string, callback: (message: any) => void): Promise<void> {
+	async receive(queueName: string): Promise<any> {
 		if (!this.channel) {
 			throw new Error("RabbitMQ channel is not initialized. Call init() first.");
 		}
 		await this.channel.assertQueue(queueName, { durable: true });
 		console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queueName);
-		this.channel.consume(queueName, (msg) => {
-			if (msg) {
-				const messageContent = msg.content.toString();
-				const message = JSON.parse(messageContent);
-				console.log(` [x] Received:`, message);
-				callback(message);
-				this.channel.ack(msg);
-			}
+
+		return new Promise((resolve, reject) => {
+			this.channel.consume(
+				queueName,
+				(msg) => {
+					if (msg) {
+						try {
+							const messageContent = msg.content.toString();
+							const message = JSON.parse(messageContent);
+							console.log(` [x] Received:`, message);
+							this.channel.ack(msg);
+							resolve(message);
+						} catch (error) {
+							this.channel.nack(msg);
+							reject(error);
+						}
+					}
+				},
+				{ noAck: false }
+			); // Explicit acknowledgment enabled
 		});
 	}
 

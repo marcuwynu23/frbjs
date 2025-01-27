@@ -9,10 +9,13 @@ const FireRabbit = require("@marcuwynu23/frbjs");
 	// Send a message
 	await rabbit.send(queueName, { text: "Hello, RabbitMQ!" });
 
-	// Receive messages
-	await rabbit.receive(queueName, (message) => {
+	// Receive a message
+	try {
+		const message = await rabbit.receive(queueName);
 		console.log("Received message:", message);
-	});
+	} catch (error) {
+		console.error("Error receiving message:", error);
+	}
 
 	// Close the connection
 	// await rabbit.close();
