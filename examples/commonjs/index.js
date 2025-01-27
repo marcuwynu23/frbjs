@@ -1,8 +1,9 @@
+require("dotenv").config();
 const FireRabbit = require("@marcuwynu23/frbjs");
 
 (async () => {
 	const rabbit = new FireRabbit();
-	await rabbit.init("amqp://guest:guest@203.161.53.228:5672"); // Replace with your RabbitMQ URI
+	await rabbit.init(process.env.RABBIT_MQ); // Replace with your RabbitMQ URI
 
 	const queueName = "test-queue";
 
