@@ -1,0 +1,25 @@
+{
+  "name": "@marcuwynu23/frbjs",
+  "version": "1.0.0",
+  "description": "a simple rabbitmq wrapper library ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcuwynu23/frbjs.git"
+  },
+  "keywords": [
+    "rabbitmq",
+    "simple",
+    "npm",
+    "amqplib"
+  ],
+  "author": "Mark Wayne B. Menorca",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcuwynu23/frbjs/issues"
+  },
+  "homepage": "https://github.com/marcuwynu23/frbjs#readme"
+}
