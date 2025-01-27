@@ -2,9 +2,13 @@
   "name": "@marcuwynu23/frbjs",
   "version": "1.0.1",
   "description": "a simple rabbitmq wrapper library ",
-  "main": "index.js",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:cjs": "tsc --outDir dist/cjs --module CommonJS",
+    "build:esm": "tsc --outDir dist/esm --module ESNext",
+    "build": "npm run build:cjs && npm run build:esm"
   },
   "repository": {
     "type": "git",
@@ -21,5 +25,12 @@
   "bugs": {
     "url": "https://github.com/marcuwynu23/frbjs/issues"
   },
-  "homepage": "https://github.com/marcuwynu23/frbjs#readme"
+  "homepage": "https://github.com/marcuwynu23/frbjs#readme",
+  "dependencies": {
+    "amqplib": "^0.10.5"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.6",
+    "typescript": "^5.7.3"
+  }
 }
