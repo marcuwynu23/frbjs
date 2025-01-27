@@ -73,9 +73,8 @@ const FireRabbit = require('firerabbit');
 
   const queueName = 'test-queue';
 
-  await rabbit.receive(queueName, (message) => {
-    console.log('Message received:', message);
-  });
+  const message = await rabbit.receive(queueName);
+	console.log("Received message:", message);
 })();
 ```
 
