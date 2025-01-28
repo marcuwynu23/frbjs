@@ -16,7 +16,6 @@ class FireRabbit {
             }
             this.connection = yield amqp.connect(uri);
             this.channel = yield this.connection.createChannel();
-            console.log("RabbitMQ connected successfully.");
         });
     }
     send(queueName, message) {
@@ -27,7 +26,6 @@ class FireRabbit {
             yield this.channel.assertQueue(queueName, { durable: true });
             const messageString = typeof message === "string" ? message : JSON.stringify(message);
             this.channel.sendToQueue(queueName, Buffer.from(messageString), { persistent: true });
-            console.log(` [x] Sent: ${messageString}`);
         });
     }
     receive(queueName) {
@@ -36,14 +34,12 @@ class FireRabbit {
                 throw new Error("RabbitMQ channel is not initialized. Call init() first.");
             }
             yield this.channel.assertQueue(queueName, { durable: true });
-            console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queueName);
             return new Promise((resolve, reject) => {
                 this.channel.consume(queueName, (msg) => {
                     if (msg) {
                         try {
                             const messageContent = msg.content.toString();
                             const message = JSON.parse(messageContent);
-                            console.log(` [x] Received:`, message);
                             this.channel.ack(msg);
                             resolve(message);
                         }
