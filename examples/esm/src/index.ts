@@ -20,7 +20,7 @@ dotenv.config();
 		const queueName = "test-queue";
 
 		// Send a message
-		const messageToSend = { text: "test" };
+		const messageToSend = { text: "Hello World!" };
 		await rabbit.send(queueName, messageToSend);
 		console.log(`Message sent to queue "${queueName}":`, messageToSend);
 
