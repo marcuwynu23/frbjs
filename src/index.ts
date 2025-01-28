@@ -10,7 +10,6 @@ class FireRabbit {
 		}
 		this.connection = await amqp.connect(uri);
 		this.channel = await this.connection.createChannel();
-		console.log("RabbitMQ connected successfully.");
 	}
 
 	async send(queueName: string, message: object | string): Promise<void> {
@@ -20,7 +19,6 @@ class FireRabbit {
 		await this.channel.assertQueue(queueName, { durable: true });
 		const messageString = typeof message === "string" ? message : JSON.stringify(message);
 		this.channel.sendToQueue(queueName, Buffer.from(messageString), { persistent: true });
-		console.log(` [x] Sent: ${messageString}`);
 	}
 
 	async receive(queueName: string): Promise<any> {
@@ -28,7 +26,6 @@ class FireRabbit {
 			throw new Error("RabbitMQ channel is not initialized. Call init() first.");
 		}
 		await this.channel.assertQueue(queueName, { durable: true });
-		console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queueName);
 
 		return new Promise((resolve, reject) => {
 			this.channel.consume(
@@ -38,7 +35,6 @@ class FireRabbit {
 						try {
 							const messageContent = msg.content.toString();
 							const message = JSON.parse(messageContent);
-							console.log(` [x] Received:`, message);
 							this.channel.ack(msg);
 							resolve(message);
 						} catch (error) {
