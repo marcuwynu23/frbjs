@@ -14,54 +14,118 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const amqplib_1 = __importDefault(require("amqplib"));
 class FireRabbit {
+    constructor() {
+        this.isConnected = false;
+    }
+    /**
+     * Initialize the RabbitMQ connection and channel
+     * @param uri RabbitMQ URI
+     */
     init(uri) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!uri) {
                 throw new Error("RabbitMQ URI is required.");
             }
-            this.connection = yield amqplib_1.default.connect(uri);
-            this.channel = yield this.connection.createChannel();
+            try {
+                this.connection = yield amqplib_1.default.connect(uri);
+                this.connection.on("error", (err) => {
+                    console.error("RabbitMQ connection error:", err);
+                    this.isConnected = false;
+                });
+                this.connection.on("close", () => {
+                    console.warn("RabbitMQ connection closed.");
+                    this.isConnected = false;
+                });
+                this.channel = yield this.connection.createChannel();
+                this.isConnected = true;
+                console.log("RabbitMQ connected successfully.");
+            }
+            catch (error) {
+                console.error("Failed to connect to RabbitMQ:", error);
+                throw new Error("Failed to connect to RabbitMQ. Check your URI and server status.");
+            }
         });
     }
+    /**
+     * Send a message to a queue
+     * @param queueName Queue name
+     * @param message Message to send
+     */
     send(queueName, message) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.channel) {
-                throw new Error("RabbitMQ channel is not initialized. Call init() first.");
+            if (!this.isConnected || !this.channel) {
+                throw new Error("RabbitMQ channel is not initialized or connection is lost. Call init() first.");
             }
-            yield this.channel.assertQueue(queueName, { durable: true });
-            const messageString = typeof message === "string" ? message : JSON.stringify(message);
-            this.channel.sendToQueue(queueName, Buffer.from(messageString), { persistent: true });
+            try {
+                yield this.channel.assertQueue(queueName, { durable: true });
+                const messageString = typeof message === "string" ? message : JSON.stringify(message);
+                this.channel.sendToQueue(queueName, Buffer.from(messageString), { persistent: true });
+                console.log(`Message sent to queue "${queueName}":`, messageString);
+            }
+            catch (error) {
+                console.error("Error sending message to RabbitMQ:", error);
+                throw new Error("Failed to send message to RabbitMQ.");
+            }
         });
     }
+    /**
+     * Receive a message from a queue
+     * @param queueName Queue name
+     */
     receive(queueName) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.channel) {
-                throw new Error("RabbitMQ channel is not initialized. Call init() first.");
+            if (!this.isConnected || !this.channel) {
+                throw new Error("RabbitMQ channel is not initialized or connection is lost. Call init() first.");
             }
-            yield this.channel.assertQueue(queueName, { durable: true });
-            return new Promise((resolve, reject) => {
-                this.channel.consume(queueName, (msg) => {
-                    if (msg) {
-                        try {
-                            const messageContent = msg.content.toString();
-                            const message = JSON.parse(messageContent);
-                            this.channel.ack(msg);
-                            resolve(message);
+            try {
+                yield this.channel.assertQueue(queueName, { durable: true });
+                console.log(`Waiting for messages in queue "${queueName}"...`);
+                return new Promise((resolve, reject) => {
+                    this.channel.consume(queueName, (msg) => {
+                        if (msg) {
+                            try {
+                                const messageContent = msg.content.toString();
+                                const message = JSON.parse(messageContent);
+                                this.channel.ack(msg);
+                                console.log(`Message received from queue "${queueName}":`, message);
+                                resolve(message);
+                            }
+                            catch (error) {
+                                this.channel.nack(msg);
+                                console.error("Error processing message from RabbitMQ:", error);
+                                reject(new Error("Failed to process message."));
+                            }
                         }
-                        catch (error) {
-                            this.channel.nack(msg);
-                            reject(error);
+                        else {
+                            reject(new Error("Message was null or undefined."));
                         }
-                    }
-                }, { noAck: false }); // Explicit acknowledgment enabled
-            });
+                    }, { noAck: false });
+                });
+            }
+            catch (error) {
+                console.error("Error receiving message from RabbitMQ:", error);
+                throw new Error("Failed to receive message from RabbitMQ.");
+            }
         });
     }
+    /**
+     * Close the RabbitMQ connection and channel
+     */
     close() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.connection) {
-                yield this.connection.close();
+            try {
+                if (this.channel) {
+                    yield this.channel.close();
+                }
+                if (this.connection) {
+                    yield this.connection.close();
+                }
+                this.isConnected = false;
                 console.log("RabbitMQ connection closed.");
+            }
+            catch (error) {
+                console.error("Error closing RabbitMQ connection:", error);
+                throw new Error("Failed to close RabbitMQ connection.");
             }
         });
     }
