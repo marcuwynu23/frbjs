@@ -1,0 +1,15 @@
+{
+  "name": "@marcuwynu23/frbjs",
+  "version": "1.1.3",
+  "description": "a simple rabbitmq wrapper library ",
+  "module": "index.js",
+  "scripts": {
+    "dev": "tsc && nodemon dist/index.js"
+  },
+  "dependencies": {
+    "@marcuwynu23/frbjs": "^1.1.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
