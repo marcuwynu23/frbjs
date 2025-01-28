@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/marcuwynu23/frbjs#readme",
   "dependencies": {
-    "@marcuwynu23/frbjs": "^1.1.1",
     "amqplib": "^0.10.5"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.6",
+    "@types/node": "^22.10.10",
     "typescript": "^5.7.3"
   }
 }
