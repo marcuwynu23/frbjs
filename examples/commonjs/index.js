@@ -8,7 +8,7 @@ const FireRabbit = require("@marcuwynu23/frbjs");
 	const queueName = "test-queue";
 
 	// Send a message
-	await rabbit.send(queueName, { text: "Hello, RabbitMQ!" });
+	await rabbit.send(queueName, { text: "test" });
 
 	// Receive a message
 	try {
