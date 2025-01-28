@@ -16,7 +16,7 @@
 Install FireRabbit via npm:
 
 ```bash
-npm install firerabbit
+npm install @marcuwynu23/frbjs
 ```
 
 ## Features
@@ -33,7 +33,7 @@ npm install firerabbit
 Create a new instance of the FireRabbit class and initialize the RabbitMQ connection.
 
 ```javascript
-const FireRabbit = require('firerabbit');
+const FireRabbit = require('@marcuwynu23/frbjs');
 
 (async () => {
   const rabbit = new FireRabbit();
@@ -46,7 +46,7 @@ const FireRabbit = require('firerabbit');
 Send a message to a specified RabbitMQ queue.
 
 ```javascript
-const FireRabbit = require('firerabbit');
+const FireRabbit = require('@marcuwynu23/frbjs');
 
 (async () => {
   const rabbit = new FireRabbit();
@@ -65,7 +65,7 @@ const FireRabbit = require('firerabbit');
 Listen to a RabbitMQ queue and process incoming messages.
 
 ```javascript
-const FireRabbit = require('firerabbit');
+const FireRabbit = require('@marcuwynu23/frbjs');
 
 (async () => {
   const rabbit = new FireRabbit();
